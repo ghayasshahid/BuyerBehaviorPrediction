@@ -1,0 +1,194 @@
+{
+  "Administrative": {
+    "calculated_from_visit": false,
+    "type": "numeric",
+    "min": 0.0,
+    "max": 27.0,
+    "median": 1.0,
+    "preprocessing": "log1p, then StandardScaler"
+  },
+  "Administrative_Duration": {
+    "calculated_from_visit": false,
+    "type": "numeric",
+    "min": 0.0,
+    "max": 3398.75,
+    "median": 9.0,
+    "preprocessing": "log1p, then StandardScaler"
+  },
+  "Informational": {
+    "calculated_from_visit": false,
+    "type": "numeric",
+    "min": 0.0,
+    "max": 24.0,
+    "median": 0.0,
+    "preprocessing": "log1p, then StandardScaler"
+  },
+  "Informational_Duration": {
+    "calculated_from_visit": false,
+    "type": "numeric",
+    "min": 0.0,
+    "max": 2549.375,
+    "median": 0.0,
+    "preprocessing": "log1p, then StandardScaler"
+  },
+  "ProductRelated": {
+    "calculated_from_visit": false,
+    "type": "numeric",
+    "min": 0.0,
+    "max": 705.0,
+    "median": 18.0,
+    "preprocessing": "log1p, then StandardScaler"
+  },
+  "ProductRelated_Duration": {
+    "calculated_from_visit": false,
+    "type": "numeric",
+    "min": 0.0,
+    "max": 63973.52223,
+    "median": 617.0,
+    "preprocessing": "log1p, then StandardScaler"
+  },
+  "BounceRates": {
+    "calculated_from_visit": true,
+    "type": "numeric",
+    "min": 0.0,
+    "max": 0.2,
+    "median": 0.002857143,
+    "preprocessing": "log1p, then StandardScaler"
+  },
+  "ExitRates": {
+    "calculated_from_visit": true,
+    "type": "numeric",
+    "min": 0.0,
+    "max": 0.2,
+    "median": 0.025,
+    "preprocessing": "log1p, then StandardScaler"
+  },
+  "PageValues": {
+    "calculated_from_visit": true,
+    "type": "numeric",
+    "min": 0.0,
+    "max": 361.7637419,
+    "median": 0.0,
+    "preprocessing": "log1p, then StandardScaler"
+  },
+  "SpecialDay": {
+    "calculated_from_visit": false,
+    "type": "numeric",
+    "min": 0.0,
+    "max": 1.0,
+    "median": 0.0,
+    "preprocessing": "log1p, then StandardScaler"
+  },
+  "Month": {
+    "calculated_from_visit": false,
+    "type": "category",
+    "allowed_values": [
+      "Feb",
+      "Mar",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec"
+    ],
+    "preprocessing": "OneHotEncoder(min_frequency=20, handle_unknown=infrequent_if_exist)"
+  },
+  "OperatingSystems": {
+    "calculated_from_visit": false,
+    "type": "category",
+    "allowed_values": [
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8"
+    ],
+    "preprocessing": "OneHotEncoder(min_frequency=20, handle_unknown=infrequent_if_exist)"
+  },
+  "Browser": {
+    "calculated_from_visit": false,
+    "type": "category",
+    "allowed_values": [
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+      "12",
+      "13"
+    ],
+    "preprocessing": "OneHotEncoder(min_frequency=20, handle_unknown=infrequent_if_exist)"
+  },
+  "Region": {
+    "calculated_from_visit": false,
+    "type": "category",
+    "allowed_values": [
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9"
+    ],
+    "preprocessing": "OneHotEncoder(min_frequency=20, handle_unknown=infrequent_if_exist)"
+  },
+  "TrafficType": {
+    "calculated_from_visit": false,
+    "type": "category",
+    "allowed_values": [
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+      "13",
+      "14",
+      "15",
+      "16",
+      "17",
+      "18",
+      "19",
+      "20"
+    ],
+    "preprocessing": "OneHotEncoder(min_frequency=20, handle_unknown=infrequent_if_exist)"
+  },
+  "VisitorType": {
+    "calculated_from_visit": false,
+    "type": "category",
+    "allowed_values": [
+      "New_Visitor",
+      "Other",
+      "Returning_Visitor"
+    ],
+    "preprocessing": "OneHotEncoder(min_frequency=20, handle_unknown=infrequent_if_exist)"
+  },
+  "Weekend": {
+    "calculated_from_visit": false,
+    "type": "numeric",
+    "min": 0.0,
+    "max": 1.0,
+    "median": 0.0,
+    "preprocessing": "passthrough"
+  }
+}
