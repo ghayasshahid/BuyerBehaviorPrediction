@@ -4,3 +4,5 @@ matplotlib==3.10.9
 seaborn==0.13.2
 scikit-learn==1.7.2
 joblib==1.6.0
+nbconvert==7.17.2
+ipykernel==7.3.0
