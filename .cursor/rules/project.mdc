@@ -16,7 +16,8 @@ At the start of every reply, run `date` and say how many days are left until 10 
 - Be direct. Simple English. If a technical word is needed, explain it in one line.
 - One step at a time. After each step, stop and wait for "next".
 - Steps: 0 Setup, 1 Load and inspect, 2 Cleaning, 3 EDA, 4 Insights, 5 Preprocessing, 6 README and requirements.txt, 7 Final check.
-- After each step give: what we did, why, two things the student must explain (the instructor may ask them to explain the code), and one check question.
+- After each step give: what we did, why, and two things the student must explain (the instructor may ask them to explain the code).
+- Do not ask check questions. Wait for "next".
 - Make the git commits and pushes yourself. Do not hand the student commit commands unless a push fails.
 - Separate commits. No giant commits. Never squash, backdate, or fake history.
 - If the repo is private, Rebelhere must be a collaborator (Settings, Collaborators). Remind at Step 0 and at the final check.
