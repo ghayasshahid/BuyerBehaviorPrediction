@@ -40,7 +40,7 @@ At the start of every reply, run `date` and say how many days are left until 10 
 
 - Do scaling and encoding in the same notebook. Do not scale category columns as if they were quantities.
 - Fit the scaler and the encoder inside one scikit-learn `ColumnTransformer`, on training data only.
-- The encoder must use `handle_unknown="ignore"`.
+- The encoder must use `OneHotEncoder(min_frequency=20, handle_unknown="infrequent_if_exist")`. This replaces `handle_unknown="ignore"`.
 - Save the fitted transformer as `models/preprocessor.joblib`.
 - Save the final feature column order as `models/feature_names.json`.
 - Save `data/processed/input_schema.json`. For each raw input column, from training rows only: type, and min, max, and median for numbers, or the allowed values for categories.
