@@ -1,0 +1,62 @@
+---
+description: Phase 1 buying-behavior brief and corrections. Follow this in every chat.
+alwaysApply: true
+---
+
+# Buying behavior project
+
+Course term project. Topic: Project 15, Buying Behavior Prediction. Dataset: Online Shoppers Purchasing Intention (UCI). About 12,330 rows, 17 inputs, target `Revenue` (bought or not). Team of 2–3. One shared GitHub repo. Each member commits from their own GitHub account.
+
+Phase 1 is due Tuesday 10 November 2026. Finish the data work by Monday 9 November night. Phase 2 is a working app or demo. Its other requirements are unknown. Do not build the app, train a model, or plan a report during Phase 1.
+
+At the start of every reply, run `date` and say how many days are left until 10 November 2026. At the start of each work session, run `git pull`.
+
+## How to work
+
+- Be direct. Simple English. If a technical word is needed, explain it in one line.
+- One step at a time. After each step, stop and wait for "next".
+- Steps: 0 Setup, 1 Load and inspect, 2 Cleaning, 3 EDA, 4 Insights, 5 Preprocessing, 6 README and requirements.txt, 7 Final check.
+- After each step give: what we did, why, two things the student must explain (the instructor may ask them to explain the code), and one check question.
+- Make the git commits and pushes yourself. Do not hand the student commit commands unless a push fails.
+- Separate commits. No giant commits. Never squash, backdate, or fake history.
+- If the repo is private, Rebelhere must be a collaborator (Settings, Collaborators). Remind at Step 0 and at the final check.
+- Suggest a notebook split so each teammate commits their own work: cleaning, EDA, preprocessing.
+- Libraries: pandas, numpy, matplotlib, seaborn, scikit-learn, joblib only, unless the student approves more.
+- Simple commented code. Fixed random seed 42.
+- Run each notebook with no errors and leave the outputs saved.
+- Never assume what is in the data. Load it and decide from what you see. If a check finds no problem, say so. Do not invent problems.
+
+## Data rules
+
+- Raw file: `data/raw/online_shoppers_intention.csv`. Never edit it.
+- Verify, do not assume: about 15% bought; some duplicate rows; only 10 of 12 months; `OperatingSystems`, `Browser`, `Region`, and `TrafficType` are numeric codes for categories.
+- Also check impossible values (negative durations, page counts that disagree with time) and inconsistent `Month` and `VisitorType` text.
+- Count duplicates, then remove them in cleaning, and report how many.
+- Do not delete outliers blindly. Visit numbers are skewed, and large values are often real buyers. For each numeric column show a boxplot and decide keep, cap, or transform, with the reason in a markdown cell.
+- Measure class imbalance. Do not fix it in Phase 1. Fixing it is Phase 2 and training data only.
+- Avoid leakage. In `03_preprocessing`, clean first, then an 80/20 stratified split with `random_state=42`. Fit preprocessing on training rows only, then apply it to test. Save train and test separately in `data/processed/`.
+
+## Step 5 preprocessing
+
+- Do scaling and encoding in the same notebook. Do not scale category columns as if they were quantities.
+- Fit the scaler and the encoder inside one scikit-learn `ColumnTransformer`, on training data only.
+- The encoder must use `handle_unknown="ignore"`.
+- Save the fitted transformer as `models/preprocessor.joblib`.
+- Save the final feature column order as `models/feature_names.json`.
+- Save `data/processed/input_schema.json`. For each raw input column, from training rows only: type, and min, max, and median for numbers, or the allowed values for categories.
+
+## EDA
+
+Minimum: target counts and percentages; histograms for all numeric columns; boxplots for numeric columns and by target for the key ones; correlation heatmap, naming highly correlated pairs; buying rate by Month, VisitorType, Weekend, TrafficType, and SpecialDay; PageValues vs Revenue; BounceRates vs ExitRates. Every graph needs a title, axis labels, and a short markdown note with real numbers.
+
+Insights: 8–12 insights, each with a specific number, then a "what this means for modeling" list. No generic claims.
+
+### Can a real user provide this?
+
+Do not write the conclusion before the numbers. For `PageValues`, `BounceRates`, and `ExitRates` separately: show the correlation with `Revenue` and the buying rate by bucket. Then say, for each column, whether it looks like a leak, whether it is just hard for a user to type, or both. A leak is a value from the same visit that gives away whether that visit already ended in a purchase. Do not group the three columns together unless the numbers say the same thing.
+
+## Repo files
+
+`README.md` (title, description, problem, dataset source and size, features, target, cleaning summary, key findings from real notebook results, how to run). Placeholders for member names and registration numbers. Dataset link or the data. Notebooks `01_data_cleaning.ipynb`, `02_eda.ipynb`, `03_preprocessing.ipynb` with markdown that explains what and why. Graphs in the notebooks or `images/`. Cleaned and processed data, or a script that makes them. `requirements.txt`. Folders `data/`, `notebooks/`, `images/`. `.gitignore` for checkpoints, `__pycache__`, `.DS_Store`, `.venv`.
+
+Final check: README sections, 3 notebooks executed with no errors, a note on every graph, processed data or the script, requirements install cleanly, folders, commit history across days from each member, Rebelhere has access, everything pushed.
