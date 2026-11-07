@@ -77,7 +77,15 @@
     "min": 0.0,
     "max": 1.0,
     "median": 0.0,
-    "preprocessing": "log1p, then StandardScaler"
+    "preprocessing": "log1p, then StandardScaler",
+    "allowed_values": [
+      0.0,
+      0.2,
+      0.4,
+      0.6,
+      0.8,
+      1.0
+    ]
   },
   "Month": {
     "calculated_from_visit": false,
