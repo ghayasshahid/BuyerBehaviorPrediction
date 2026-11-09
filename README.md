@@ -175,13 +175,13 @@ Every PNG in `images/`, from `ls images`.
 
 ## How to run
 
-The notebooks were run with Python 3.10.8.
+The notebooks were run with Python 3.10.8. They also run with Python 3.11. Use Python 3.10 to 3.13. `numpy==2.2.6` has no ready-made install package for Python 3.14.
 
 From the repo root:
 
 ```bash
 python3.10 -m venv .venv
-source .venv/bin/activate
+source .venv/bin/activate        # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 cd notebooks
 jupyter nbconvert --to notebook --execute --inplace 01_data_cleaning.ipynb
