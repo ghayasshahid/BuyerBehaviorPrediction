@@ -4,13 +4,11 @@ This project asks whether a visitor to an online shop buys during a visit. Phase
 
 ## Team
 
-Fill in one row per person.
-
 | Name | Registration number | GitHub username |
 | --- | --- | --- |
-| Name 1 | Registration number 1 | GitHub username 1 |
-| Name 2 | Registration number 2 | GitHub username 2 |
-| Name 3 | Registration number 3 | GitHub username 3 |
+| Ghayas Shahid | 23L-0555 | ghayasshahid |
+| Burhan Shahzad | 23L-0624 | burhan-shahzad-1 |
+| Syed Shahzaib Hussain | 23L-0677 | Shahzhussain |
 
 ## Problem statement
 
