@@ -1,6 +1,6 @@
 # Buying Behavior Prediction
 
-This project asks whether a visitor to an online shop buys during a visit. Phase 1 cleans the data, looks at the patterns, and prepares the columns. No model is trained in Phase 1.
+This project asks whether a visitor to an online shop buys during a visit. Phase 1 cleans the data, looks at the patterns, and prepares the columns. Phase 2 compares five models on that split and serves the chosen ones in a small website.
 
 ## Team
 
@@ -14,7 +14,7 @@ This project asks whether a visitor to an online shop buys during a visit. Phase
 
 The target is `Revenue`. It is 1 if the visitor bought and 0 if they did not. The task is to predict that choice from the other columns in the visit.
 
-Phase 2 builds a working app or demo. Phase 1 stops at the cleaned and prepared data.
+Phase 1 stops at the cleaned and prepared data. Phase 2 trains the models and the website. A guess of "nobody buys" is right 84.37% of the time and finds no buyers, so the models are ranked by precision, recall, and F1, not by accuracy.
 
 ## Dataset
 
@@ -59,10 +59,29 @@ Inputs, grouped by type:
 ├── models/
 │   ├── preprocessor.joblib
 │   └── feature_names.json
-└── notebooks/
-    ├── 01_data_cleaning.ipynb
-    ├── 02_eda.ipynb
-    └── 03_preprocessing.ipynb
+├── notebooks/
+│   ├── 01_data_cleaning.ipynb
+│   ├── 02_eda.ipynb
+│   ├── 03_preprocessing.ipynb
+│   └── 04_modeling.ipynb
+├── phase2/
+│   ├── preprocessing.py
+│   ├── models.py
+│   ├── evaluate.py
+│   ├── plots.py
+│   ├── train.py
+│   ├── models/
+│   │   ├── app_pipeline.joblib
+│   │   └── full_pipeline.joblib
+│   └── results/
+│       ├── cv_metrics.csv
+│       ├── tuned_metrics.csv
+│       ├── summary.json
+│       ├── error_slices.csv
+│       ├── feature_importance.csv
+│       └── 04_*.png
+└── website/
+    └── app.py
 ```
 
 ## Cleaning summary
@@ -189,13 +208,58 @@ jupyter nbconvert --to notebook --execute --inplace 02_eda.ipynb
 jupyter nbconvert --to notebook --execute --inplace 03_preprocessing.ipynb
 ```
 
-Run them in that order, from the `notebooks/` folder. Notebook 01 writes the cleaned table. Notebook 02 reads it and writes the charts. Notebook 03 reads it and writes the split, the prepared tables, and the saved preprocessor.
+Run the Phase 1 notebooks in that order, from the `notebooks/` folder. Notebook 01 writes the cleaned table. Notebook 02 reads it and writes the charts. Notebook 03 reads it and writes the split, the prepared tables, and the saved preprocessor.
 
-## Phase 2 plan
+Phase 2 reads that split. From the repo root:
 
-- Test the model with and without `PageValues`, `BounceRates`, and `ExitRates`.
-- If any of those columns is dropped, fit the preprocessor again.
-- Put the preprocessing and the model in one pipeline, so each cross-validation fold fits the scaler only on that fold's training rows.
-- Judge models by recall and precision, not accuracy. Recall is the share of real buyers the model finds. Precision is the share of predicted buyers who really bought.
-- Handle the class imbalance on the training rows only.
-- Build the app using `models/preprocessor.joblib` and `data/processed/input_schema.json`.
+```bash
+python -m phase2.train
+python -m nbconvert --to notebook --execute --inplace notebooks/04_modeling.ipynb
+python -m streamlit run website/app.py
+```
+
+`phase2.train` writes `phase2/results/` and the two pipelines in `phase2/models/`. The notebook loads those files and scores the test rows again. The website loads the same pipelines. Open the local URL Streamlit prints, enter a visit, and read the chance of purchase.
+
+The website is not deployed. To put it on Streamlit Community Cloud, point the app at `website/app.py` in this repo and use Python 3.10 to 3.13. Do not put any key in the repo. This project does not need one.
+
+## Models
+
+Each model is a scikit-learn pipeline. The pipeline logs the skewed counts, scales those columns, and one-hot encodes the categories with `min_frequency=20`. The preparation is fit on each training fold, not on the test rows. Class weights are set on the training rows so the 15.6% of buyers are not ignored.
+
+| Model | Role |
+| --- | --- |
+| Majority class | Always predicts "no purchase". |
+| Logistic regression | Linear baseline. `class_weight="balanced"`. |
+| Decision tree | One tree, with a minimum leaf size so it cannot memorize single rows. |
+| Random forest | 200 trees. This is the better model when the three visit rates are included. |
+| Gradient boosting | Histogram gradient boosting. This is the model the website uses for a normal form. |
+
+A small grid search picks the depth, the leaf size, the learning rate, or `C`. The score being maximized is F1. The probability cutoff is chosen from out-of-fold training scores.
+
+`PageValues`, `BounceRates`, and `ExitRates` are calculated from the visit. Every model is trained once without them and once with them. The form uses the version without them. The version with them is an upper bound.
+
+## Results
+
+Numbers are on the 2,441 held-out test rows (382 buyers), after the model was chosen on the training folds.
+
+| Setup | Model | Precision | Recall | F1 | ROC AUC |
+| --- | --- | ---: | ---: | ---: | ---: |
+| Majority class | Always "no" | 0 | 0 | 0 | 0.50 |
+| Form columns only | Gradient boosting | 0.311 | 0.667 | 0.424 | 0.770 |
+| Form columns plus the three visit rates | Random forest | 0.665 | 0.691 | 0.678 | 0.930 |
+
+The shipped model flags 255 of the 382 buyers and also flags 566 visits that did not buy. Its cutoff is 0.53. At cutoff 0.5, F1 is 0.413, so the training-fold cutoff is a small improvement. Accuracy is 0.716, below the 0.844 of "nobody buys". The F1 is the number that matters.
+
+The random forest that also sees the visit rates has 5-fold F1 0.681 and test F1 0.678. Its score on the training rows themselves is 0.916 because the forest is deep. The fold score and the test score agree.
+
+On the shipped model, May recall is 0.532 (79 test buyers) and November recall is 0.851 (161 test buyers). New visitors are recalled at 0.825. Returning visitors are recalled at 0.614. Recall is similar when `PageValues` is 0 (0.694) and when it is above 0 (0.661). Precision is not: a flag on a zero page-value visit is right 10.3% of the time, and a flag on a positive page-value visit is right 61.0% of the time. Most false alarms are in the zero group, and the shipped model is not allowed to see that column.
+
+Shuffling `ProductRelated_Duration` hurts test F1 the most, then `Month`, `ProductRelated`, `VisitorType`, and `TrafficType`. `Weekend`, `Region`, and `Browser` add nothing once the other columns are present.
+
+Charts: `phase2/results/04_cv_comparison.png`, `04_feature_set_gap.png`, `04_confusion_matrices.png`, `04_roc_curves.png`, `04_pr_curves.png`, `04_threshold_sweep.png`, `04_feature_importance.png`.
+
+## Conclusion
+
+The model a person can fill in finds about two thirds of buyers and is right about one time in three when it raises a flag. Use it to rank visits, not to decide them automatically. A shop that already stores `PageValues`, `BounceRates`, and `ExitRates` should use the random forest instead. F1 rises from 0.424 to 0.678.
+
+A missed buyer still has no stated cost, February and June are too small to trust, and the three visit rates should be logged by the shop rather than typed into a form.
