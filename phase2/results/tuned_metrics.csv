@@ -1,0 +1,9 @@
+feature_set,model,cv_f1_mean,best_params
+all_features,random_forest,0.6805749534315024,"{""model__max_depth"": 18, ""model__min_samples_leaf"": 2}"
+all_features,hist_gradient_boosting,0.6673817761403205,"{""model__learning_rate"": 0.1, ""model__max_depth"": 6}"
+all_features,logistic_regression,0.6526638074526467,"{""model__C"": 0.1}"
+all_features,decision_tree,0.6424382171080255,"{""model__max_depth"": 4, ""model__min_samples_leaf"": 10}"
+user_inputs,hist_gradient_boosting,0.3991550322434728,"{""model__learning_rate"": 0.1, ""model__max_depth"": 3}"
+user_inputs,random_forest,0.3980379613029565,"{""model__max_depth"": 18, ""model__min_samples_leaf"": 6}"
+user_inputs,logistic_regression,0.38082930766309586,"{""model__C"": 0.1}"
+user_inputs,decision_tree,0.371805816158336,"{""model__max_depth"": 8, ""model__min_samples_leaf"": 40}"
