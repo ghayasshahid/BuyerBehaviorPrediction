@@ -1,0 +1,118 @@
+{
+  "train_rows": 9764,
+  "train_buyers": 1526,
+  "test_rows": 2441,
+  "test_buyers": 382,
+  "majority_accuracy": 0.8435,
+  "positive_rate_train": 0.1563,
+  "app_model": {
+    "model": "hist_gradient_boosting",
+    "display_name": "Gradient boosting",
+    "feature_set": "user_inputs",
+    "best_params": {
+      "model__learning_rate": 0.1,
+      "model__max_depth": 3
+    },
+    "cv_f1_mean": 0.3992,
+    "threshold": 0.53,
+    "train_f1": 0.482,
+    "test": {
+      "threshold": 0.53,
+      "precision": 0.3106,
+      "recall": 0.6675,
+      "f1": 0.4239,
+      "accuracy": 0.7161,
+      "roc_auc": 0.7698,
+      "average_precision": 0.3453,
+      "tn": 1493,
+      "fp": 566,
+      "fn": 127,
+      "tp": 255
+    },
+    "test_at_0_5": {
+      "threshold": 0.5,
+      "precision": 0.2912,
+      "recall": 0.712,
+      "f1": 0.4134,
+      "accuracy": 0.6837,
+      "roc_auc": 0.7698,
+      "average_precision": 0.3453,
+      "tn": 1397,
+      "fp": 662,
+      "fn": 110,
+      "tp": 272
+    }
+  },
+  "full_model": {
+    "model": "random_forest",
+    "display_name": "Random forest",
+    "feature_set": "all_features",
+    "best_params": {
+      "model__max_depth": 18,
+      "model__min_samples_leaf": 2
+    },
+    "cv_f1_mean": 0.6806,
+    "threshold": 0.51,
+    "train_f1": 0.9162,
+    "test": {
+      "threshold": 0.51,
+      "precision": 0.665,
+      "recall": 0.6911,
+      "f1": 0.6778,
+      "accuracy": 0.8972,
+      "roc_auc": 0.9298,
+      "average_precision": 0.7331,
+      "tn": 1926,
+      "fp": 133,
+      "fn": 118,
+      "tp": 264
+    },
+    "test_at_0_5": {
+      "threshold": 0.5,
+      "precision": 0.6642,
+      "recall": 0.7042,
+      "f1": 0.6836,
+      "accuracy": 0.898,
+      "roc_auc": 0.9298,
+      "average_precision": 0.7331,
+      "tn": 1923,
+      "fp": 136,
+      "fn": 113,
+      "tp": 269
+    }
+  },
+  "calculated_columns": [
+    "BounceRates",
+    "ExitRates",
+    "PageValues"
+  ],
+  "user_columns": [
+    "Administrative",
+    "Administrative_Duration",
+    "Informational",
+    "Informational_Duration",
+    "ProductRelated",
+    "ProductRelated_Duration",
+    "SpecialDay",
+    "Month",
+    "OperatingSystems",
+    "Browser",
+    "Region",
+    "TrafficType",
+    "VisitorType",
+    "Weekend"
+  ],
+  "log_columns": [
+    "Administrative",
+    "Administrative_Duration",
+    "Informational",
+    "Informational_Duration",
+    "ProductRelated",
+    "ProductRelated_Duration",
+    "BounceRates",
+    "ExitRates",
+    "PageValues",
+    "SpecialDay"
+  ],
+  "analysis": "The shipped model is Gradient boosting on the user-input columns. It had the highest 5-fold F1 on the training rows (0.399). The cutoff 0.53 was chosen from out-of-fold training scores. On the held-out test set (2441 visits, 382 buyers) precision is 0.311, recall is 0.667, and F1 is 0.424. ROC AUC is 0.770. Accuracy is 0.716. A guess of nobody buys scores 0.844 accuracy and finds 0 of the 382 buyers, so accuracy is the wrong ranking score. At the default cutoff 0.5 the same model has precision 0.291, recall 0.712, and F1 0.413. The training-fold cutoff moves that tradeoff. Test F1 at the chosen cutoff is 0.424. Training-row F1 at the same cutoff is 0.482, against test F1 0.424. The training and test F1 scores are close, so the fit is not memorizing the training rows. The best model that is also allowed to see BounceRates, ExitRates, PageValues is Random forest. Its 5-fold F1 is 0.681 and its test F1 is 0.678 (precision 0.665, recall 0.691, ROC AUC 0.930). The score on the same rows it trained on is 0.916, which is higher because that forest is deep. The fold score and the test score agree, so the test number is the one to trust. Those three columns are calculated from the visit, so the website asks for them only in an optional analytics section. The higher score is an upper bound, not the form a shopper fills in. On the test set the shipped model is weakest for Month = May (recall 0.532, 79 buyers) and strongest for Month = Nov (recall 0.851, 161 buyers). Recall is close in both PageValues groups (0.694 when it is 0, 72 buyers; 0.661 when it is above 0, 310 buyers). Precision is not. A flag on a PageValues = 0 visit is right only 0.103 of the time (485 flags). A flag on a PageValues > 0 visit is right 0.610 of the time. The shipped model never sees PageValues, and most of its false alarms sit in the zero group. What would improve it: a cost for a missed buyer if the shop can say what a false alarm costs, a second year of visits so February and June are not tiny, and a version that does not need PageValues if the analytics team can log that score after the visit instead of before the guess."
+}
