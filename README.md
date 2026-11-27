@@ -285,6 +285,21 @@ The website (`website/app.py`) scores one visit at a time. A visit is one row of
 
 The chance is how closely the visit matches past buyers. It is not a promise. On the test rows, the form-only model is right about 1 time in 3 when it flags a visit.
 
+### Sample visits to try
+
+Click "Example: typical non-buyer" first, then change only the fields listed. The scores below come from the saved models in `phase2/models/`.
+
+| Visit | Month | Visitor type | Product pages / seconds | Admin pages / seconds | Bounce / exit / page value | Form only | With analytics |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Quick bouncer | Mar | unchanged | 1 / 5 | unchanged | 0.2 / 0.2 / 0 | 16.1%, no | 12.2%, no |
+| Short browse | May | unchanged | 5 / 120 | unchanged | 0.02 / 0.05 / 0 | 20.0%, no | 9.0%, no |
+| Window shopper | Mar | unchanged | 20 / 600 | unchanged | 0.01 / 0.03 / 0 | 52.5%, no | 10.4%, no |
+| Engaged returning shopper | Dec | unchanged | 40 / 1500 | 3 / 80 | 0.005 / 0.02 / 5 | 59.9%, yes | 48.5%, no |
+| New visitor in November | Nov | New_Visitor | 30 / 1000 | 2 / 60 | 0.005 / 0.02 / 15 | 82.4%, yes | 86.8%, yes |
+| Holiday power shopper | Nov | New_Visitor | 80 / 3000 | 5 / 200 | 0 / 0.01 / 60 | 84.6%, yes | 83.4%, yes |
+
+The holiday power shopper also has 2 informational pages and 60 informational seconds. The window shopper and the engaged returning shopper are close to the form-only cutoff. Once `PageValues` is known (0 and 5), the analytics model says no to both.
+
 ## Conclusion
 
 The model a person can fill in finds about two thirds of buyers and is right about one time in three when it raises a flag. Use it to rank visits, not to decide them automatically. A shop that already stores `PageValues`, `BounceRates`, and `ExitRates` should use the random forest instead. F1 rises from 0.424 to 0.678.
