@@ -256,7 +256,19 @@ On the shipped model, May recall is 0.532 (79 test buyers) and November recall i
 
 Shuffling `ProductRelated_Duration` hurts test F1 the most, then `Month`, `ProductRelated`, `VisitorType`, and `TrafficType`. `Weekend`, `Region`, and `Browser` add nothing once the other columns are present.
 
-Charts: `phase2/results/04_cv_comparison.png`, `04_feature_set_gap.png`, `04_confusion_matrices.png`, `04_roc_curves.png`, `04_pr_curves.png`, `04_threshold_sweep.png`, `04_feature_importance.png`.
+### Phase 2 graphs
+
+Every PNG in `phase2/results/`, written by `python -m phase2.train`.
+
+| File | What it shows |
+| --- | --- |
+| `phase2/results/04_cv_comparison.png` | Precision, recall, and F1 of each model on the 5 training folds, using the form columns at cutoff 0.5. Gradient boosting and random forest tie on F1 (about 0.40). The majority class scores 0 on all three. |
+| `phase2/results/04_feature_set_gap.png` | 5-fold F1 of each model without and with `PageValues`, `BounceRates`, and `ExitRates`. The three columns lift every model from about 0.37–0.40 to about 0.62–0.67. |
+| `phase2/results/04_confusion_matrices.png` | Test-set counts for both models. The shipped model finds 255 buyers, misses 127, and raises 566 false alarms. The model with the visit rates finds 264, misses 118, and raises 133 false alarms. |
+| `phase2/results/04_threshold_sweep.png` | Precision, recall, and F1 of the shipped model on out-of-fold training scores, for cutoffs from 0.15 to 0.85. F1 stays within 0.01 of its best (0.401) from 0.45 to 0.61. The chosen cutoff 0.53 sits on that flat part. |
+| `phase2/results/04_roc_curves.png` | Test ROC curves. AUC is 0.770 for the shipped model and 0.930 with the visit rates. The dashed line is a model with no ranking skill. |
+| `phase2/results/04_pr_curves.png` | Test precision-recall curves. At recall 0.6, precision is about 0.34 for the shipped model and about 0.72 with the visit rates. |
+| `phase2/results/04_feature_importance.png` | Drop in test F1 when one input is shuffled, for the shipped model. `ProductRelated_Duration` matters most (0.099), then `Month` (0.048) and `ProductRelated` (0.043). `Weekend`, `Region`, and `Browser` are below 0, so they add nothing. |
 
 ## Conclusion
 
