@@ -126,12 +126,13 @@ use_analytics = st.checkbox(
     "I have bounce rate, exit rate, and page value from the shop's analytics",
     key="use_analytics",
 )
-if use_analytics:
-    st.caption("These three numbers are calculated from the visit. They are optional. Turning them on uses the second model.")
-    analytics_left, analytics_mid, analytics_right = st.columns(3)
-    analytics_left.number_input("Bounce rate", min_value=0.0, max_value=float(SCHEMA["BounceRates"]["max"]), step=0.001, format="%.4f", key="BounceRates")
-    analytics_mid.number_input("Exit rate", min_value=0.0, max_value=float(SCHEMA["ExitRates"]["max"]), step=0.001, format="%.4f", key="ExitRates")
-    analytics_right.number_input("Page value", min_value=0.0, max_value=float(SCHEMA["PageValues"]["max"]), step=0.1, key="PageValues")
+st.caption("These three numbers are calculated from the visit. They are optional. Turning them on uses the second model.")
+# Always drawn, greyed out when off: Streamlit drops the values of widgets that are not drawn,
+# which made an example's analytics values revert to the previous visit's.
+analytics_left, analytics_mid, analytics_right = st.columns(3)
+analytics_left.number_input("Bounce rate", min_value=0.0, max_value=float(SCHEMA["BounceRates"]["max"]), step=0.001, format="%.4f", key="BounceRates", disabled=not use_analytics)
+analytics_mid.number_input("Exit rate", min_value=0.0, max_value=float(SCHEMA["ExitRates"]["max"]), step=0.001, format="%.4f", key="ExitRates", disabled=not use_analytics)
+analytics_right.number_input("Page value", min_value=0.0, max_value=float(SCHEMA["PageValues"]["max"]), step=0.1, key="PageValues", disabled=not use_analytics)
 
 if st.button("Score this visit", type="primary"):
     result = score_row(use_analytics)
