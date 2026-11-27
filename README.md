@@ -270,6 +270,21 @@ Every PNG in `phase2/results/`, written by `python -m phase2.train`.
 | `phase2/results/04_pr_curves.png` | Test precision-recall curves. At recall 0.6, precision is about 0.34 for the shipped model and about 0.72 with the visit rates. |
 | `phase2/results/04_feature_importance.png` | Drop in test F1 when one input is shuffled, for the shipped model. `ProductRelated_Duration` matters most (0.099), then `Month` (0.048) and `ProductRelated` (0.043). `Weekend`, `Region`, and `Browser` are below 0, so they add nothing. |
 
+## How the website works
+
+The website (`website/app.py`) scores one visit at a time. A visit is one row of the dataset: 17 facts about a single session on the shop.
+
+1. The user fills in the form. The fields are the dataset columns:
+   - When and who: `Month`, `VisitorType`, `Weekend`, and `SpecialDay` (how close the visit was to a holiday, from 0 to 1).
+   - Pages seen and seconds spent: administrative pages (account and login), informational pages (shipping, contact), and product pages.
+   - Codes: `OperatingSystems`, `Browser`, `Region`, and `TrafficType`. The dataset gives numbers only, not names.
+2. The optional analytics box holds `BounceRates`, `ExitRates`, and `PageValues`. The shop's analytics software calculates these, and a shopper cannot know them.
+3. If the box is off, the gradient boosting model scores the visit from the 14 form columns. If the box is on, the random forest scores it from all 17 columns.
+4. The page shows the chance of purchase and compares it with that model's cutoff (0.53 without analytics, 0.51 with analytics). At or above the cutoff, the visit is flagged as a likely purchase.
+5. The two example buttons load real training visits, one buyer and one non-buyer, that both models score correctly. `phase2/train.py` stops with an error if a retrained model ever scores them on the wrong side of the cutoff.
+
+The chance is how closely the visit matches past buyers. It is not a promise. On the test rows, the form-only model is right about 1 time in 3 when it flags a visit.
+
 ## Conclusion
 
 The model a person can fill in finds about two thirds of buyers and is right about one time in three when it raises a flag. Use it to rank visits, not to decide them automatically. A shop that already stores `PageValues`, `BounceRates`, and `ExitRates` should use the random forest instead. F1 rises from 0.424 to 0.678.
