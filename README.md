@@ -2,6 +2,8 @@
 
 This project asks whether a visitor to an online shop buys during a visit. Phase 1 cleans the data, looks at the patterns, and prepares the columns. Phase 2 compares five models on that split and serves the chosen ones in a small website.
 
+**Live website:** https://buyerbehaviorprediction-48lrfsoksjxq27wuoh28gc.streamlit.app/
+
 ## Team
 
 | Name | Registration number | GitHub username |
@@ -220,7 +222,11 @@ python -m streamlit run website/app.py
 
 `phase2.train` writes `phase2/results/` and the two pipelines in `phase2/models/`. The notebook loads those files and scores the test rows again. The website loads the same pipelines. Open the local URL Streamlit prints, enter a visit, and read the chance of purchase.
 
-The website is not deployed. To put it on Streamlit Community Cloud, point the app at `website/app.py` in this repo and use Python 3.10 to 3.13. Do not put any key in the repo. This project does not need one.
+The website is deployed on Streamlit Community Cloud: https://buyerbehaviorprediction-48lrfsoksjxq27wuoh28gc.streamlit.app/
+
+To deploy it again, point a new app at `website/app.py` on the `main` branch. Under "Advanced settings", choose Python 3.11 before you deploy. The default Python is newer, and `numpy==2.2.6` has no ready-made package for it, so the build compiles numpy and stalls. The Python version cannot be changed after deploying, so a wrong choice means deleting the app and deploying again. Do not put any key in the repo. This project does not need one.
+
+A free app sleeps when nobody visits for a while. Open the link a few minutes before a demo, and click the button to wake it if one appears.
 
 ## Models
 
