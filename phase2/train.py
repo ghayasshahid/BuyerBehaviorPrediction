@@ -56,26 +56,36 @@ def _round_row(row: dict) -> dict:
     return cleaned
 
 
-def _examples(x_train, y_train) -> dict:
-    """One typical buyer and one typical non-buyer, from training medians and modes."""
+def _examples(x_train, y_train, app, full) -> dict:
+    """One real training buyer and non-buyer that both models get right out of fold.
 
-    def one_example(mask):
-        part = x_train.loc[mask]
+    Of those rows, the one with the median shipped-model score in its class is used.
+    A row of column medians is not a real visit, and the shipped model flagged the
+    median non-buyer, so the examples are real rows instead.
+    """
+    app_scores = pd.Series(app["oof"], index=x_train.index)
+    full_scores = pd.Series(full["oof"], index=x_train.index)
+
+    def one_example(label):
+        right = ((app_scores >= app["threshold"]) == bool(label)) & (
+            (full_scores >= full["threshold"]) == bool(label)
+        )
+        part = app_scores[(y_train == label) & right]
+        index = (part - part.median()).abs().idxmin()
         row = {}
         for column in ALL_COLUMNS:
-            if column in CATEGORY_COLUMNS or column == "Weekend":
-                row[column] = part[column].mode().iloc[0]
-                if column == "Weekend":
-                    row[column] = int(row[column])
-                else:
-                    row[column] = str(row[column])
+            value = x_train.at[index, column]
+            if column in CATEGORY_COLUMNS:
+                row[column] = str(value)
+            elif column == "Weekend":
+                row[column] = int(value)
             else:
-                row[column] = round(float(part[column].median()), 4)
+                row[column] = round(float(value), 4)
         return row
 
     return {
-        "likely_buyer": one_example(y_train == 1),
-        "likely_non_buyer": one_example(y_train == 0),
+        "likely_buyer": one_example(1),
+        "likely_non_buyer": one_example(0),
     }
 
 
@@ -186,6 +196,7 @@ def _finish(choice, set_name, fitted, x_train, y_train, x_test, y_test):
         "test": test_scores,
         "test_at_0_5": half_scores,
         "train_f1": float(train_scores["f1"]),
+        "oof": oof,
     }
 
 
@@ -256,7 +267,13 @@ def run(root: Path | None = None) -> dict:
     plot_curves(curve_rows, results / "04_pr_curves.png", "pr")
     plot_importance(importance, results / "04_feature_importance.png")
 
-    examples = _examples(x_train, y_train)
+    examples = _examples(x_train, y_train, app, full)
+    shown = pd.DataFrame([examples["likely_buyer"], examples["likely_non_buyer"]], columns=ALL_COLUMNS)
+    # The website opens on these rows and either model can score them, so each must
+    # land on its own side of the cutoff for both models.
+    for result in (app, full):
+        buyer_p, non_buyer_p = result["estimator"].predict_proba(shown[result["columns"]])[:, 1]
+        assert buyer_p >= result["threshold"] > non_buyer_p, (result["model"], buyer_p, non_buyer_p)
     (results / "example_visits.json").write_text(json.dumps(examples, indent=2), encoding="utf-8")
 
     def public_model(result):
